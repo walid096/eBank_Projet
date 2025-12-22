@@ -59,7 +59,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         User user = userOpt.get();
 
-        // Spring Security expects "ROLE_" prefix for roles
         List<SimpleGrantedAuthority> authorities =
                 List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
 
