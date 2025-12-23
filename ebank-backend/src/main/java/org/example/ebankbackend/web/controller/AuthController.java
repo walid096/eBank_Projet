@@ -2,6 +2,7 @@ package org.example.ebankbackend.web.controller;
 
 import jakarta.validation.Valid;
 import org.example.ebankbackend.service.AuthService;
+import org.example.ebankbackend.web.dto.request.ChangePasswordRequest;
 import org.example.ebankbackend.web.dto.request.LoginRequest;
 import org.example.ebankbackend.web.dto.response.LoginResponse;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,13 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    // ✅ EPIC 1: Change password (authenticated users only)
+    @PutMapping("/change-password")
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        authService.changePassword(request);
+        return ResponseEntity.noContent().build(); // 204
     }
 
     @ExceptionHandler(BadCredentialsException.class)

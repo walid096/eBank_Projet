@@ -35,12 +35,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // ✅ DEBUG: always show what arrives
-        System.out.println(
-                "JWT FILTER -> URI=" + request.getRequestURI()
-                        + " AUTH=" + request.getHeader("Authorization")
-        );
-
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -63,23 +57,26 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        User user = userOpt.get();
-
-        // ✅ only set authentication if it's not already set
+        // Set authentication only if not already present
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            User user = userOpt.get();
 
             List<SimpleGrantedAuthority> authorities =
                     List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
 
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(user.getLogin(), null, authorities);
+                    new UsernamePasswordAuthenticationToken(
+                            user.getLogin(),
+                            null,
+                            authorities
+                    );
 
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            authentication.setDetails(
+                    new WebAuthenticationDetailsSource().buildDetails(request)
+            );
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            // ✅ DEBUG: confirm auth is set
-            System.out.println("JWT FILTER -> AUTH SET for login=" + user.getLogin()
-                    + " roles=" + authorities);
         }
 
         filterChain.doFilter(request, response);
