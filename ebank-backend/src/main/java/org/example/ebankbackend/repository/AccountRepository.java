@@ -10,5 +10,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     Optional<Account> findByRib(String rib);
 
+    boolean existsByRib(String rib);
+
     List<Account> findByClientId(Long clientId);
 }

@@ -5,7 +5,7 @@ import org.example.ebankbackend.security.handlers.RestAuthenticationEntryPoint;
 import org.example.ebankbackend.security.jwt.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
@@ -43,14 +44,17 @@ public class SecurityConfig {
         );
 
         http.authorizeHttpRequests(auth -> auth
+                // ✅ IMPORTANT: allow Spring Boot error endpoint, otherwise real errors become fake 401
+                .requestMatchers("/error").permitAll()
+
+                // public login
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/auth/login").permitAll()
+
+                // everything else requires JWT
                 .anyRequest().authenticated()
         );
 
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-        // keep defaults simple (no form login)
-        //http.httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
