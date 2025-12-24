@@ -1,57 +1,98 @@
 package org.example.ebankbackend.service.impl;
 
 import org.example.ebankbackend.domain.entity.Client;
+import org.example.ebankbackend.domain.entity.User;
+import org.example.ebankbackend.domain.enums.Role;
 import org.example.ebankbackend.repository.ClientRepository;
+import org.example.ebankbackend.repository.UserRepository;
 import org.example.ebankbackend.service.ClientService;
+import org.example.ebankbackend.util.PasswordGenerator;
 import org.example.ebankbackend.web.dto.request.CreateClientRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public ClientServiceImpl(ClientRepository clientRepository) {
+    public ClientServiceImpl(
+            ClientRepository clientRepository,
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder
+    ) {
         this.clientRepository = clientRepository;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
+    @Transactional
     public void createClient(CreateClientRequest request) {
 
-        // RG-5: mandatory fields check
+        // RG-5
         requireClientFields(request);
 
-        // RG-4: unique identity number
-        if (clientRepository.existsByIdentityNumber(request.getIdentityNumber())) {
+        String identityNumber = request.getIdentityNumber().trim();
+        String email = request.getEmail().trim();
+        String firstName = request.getFirstName().trim();
+        String lastName = request.getLastName().trim();
+        String postalAddress = request.getPostalAddress().trim();
+
+        // RG-4
+        if (clientRepository.existsByIdentityNumber(identityNumber)) {
             throw new IllegalArgumentException("Numéro d'identité déjà utilisé");
         }
 
-        // RG-6: unique email
-        if (clientRepository.existsByEmail(request.getEmail())) {
+        // RG-6
+        if (clientRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Email déjà utilisé");
         }
 
-        // Save client (UC-2)
+        // UC-2: save client
         Client client = new Client();
-        client.setFirstName(request.getFirstName());
-        client.setLastName(request.getLastName());
-        client.setIdentityNumber(request.getIdentityNumber());
+        client.setFirstName(firstName);
+        client.setLastName(lastName);
+        client.setIdentityNumber(identityNumber);
         client.setBirthDate(request.getBirthDate());
-        client.setEmail(request.getEmail());
-        client.setPostalAddress(request.getPostalAddress());
+        client.setEmail(email);
+        client.setPostalAddress(postalAddress);
 
-        clientRepository.save(client);
+        client = clientRepository.save(client);
 
-        // TODO: RG-7 (create user + send email) in next steps
+        // RG-7: create user
+        String login = identityNumber;
+
+        if (userRepository.existsByLogin(login)) {
+            throw new IllegalArgumentException("Login déjà utilisé");
+        }
+
+        String rawPassword = PasswordGenerator.generate();
+        String passwordHash = passwordEncoder.encode(rawPassword); // RG-1
+
+        User user = new User();
+        user.setLogin(login);
+        user.setPasswordHash(passwordHash);
+        user.setRole(Role.CLIENT);
+        user.setClient(client);
+
+        userRepository.save(user);
+
+        // TEMP: simulate email sending (RG-7)
+        System.out.println("[RG-7 EMAIL] to=" + email
+                + " | login=" + login
+                + " | password=" + rawPassword);
     }
 
-    // ===== Helper methods =====
+    // ===== Helpers =====
 
     private void requireClientFields(CreateClientRequest request) {
         if (request == null) {
             throw new IllegalArgumentException("Champs client obligatoires manquants");
         }
-
         if (isBlank(request.getFirstName())
                 || isBlank(request.getLastName())
                 || isBlank(request.getIdentityNumber())
