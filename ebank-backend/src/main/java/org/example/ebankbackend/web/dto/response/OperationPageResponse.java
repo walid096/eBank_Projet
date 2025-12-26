@@ -1,0 +1,36 @@
+package org.example.ebankbackend.web.dto.response;
+
+import java.util.List;
+
+public class OperationPageResponse {
+
+    private List<OperationLineResponse> items;
+    private int page;
+    private int size;
+    private long totalElements;
+    private int totalPages;
+    private boolean last;
+
+    public OperationPageResponse(
+            List<OperationLineResponse> items,
+            int page,
+            int size,
+            long totalElements,
+            int totalPages,
+            boolean last
+    ) {
+        this.items = items;
+        this.page = page;
+        this.size = size;
+        this.totalElements = totalElements;
+        this.totalPages = totalPages;
+        this.last = last;
+    }
+
+    public List<OperationLineResponse> getItems() { return items; }
+    public int getPage() { return page; }
+    public int getSize() { return size; }
+    public long getTotalElements() { return totalElements; }
+    public int getTotalPages() { return totalPages; }
+    public boolean isLast() { return last; }
+}

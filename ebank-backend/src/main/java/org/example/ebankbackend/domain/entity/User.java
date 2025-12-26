@@ -20,7 +20,6 @@ public class User {
     @Column(name = "login", nullable = false)
     private String login;
 
-    // must be encrypted in DB (RG_1)
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
@@ -28,7 +27,7 @@ public class User {
     @Column(name = "role", nullable = false)
     private Role role;
 
-    // Only for CLIENT role (AGENT_GUICHET => null)
+
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "client_id", foreignKey = @ForeignKey(name = "fk_users_client"))
     private Client client;

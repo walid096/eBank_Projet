@@ -6,6 +6,7 @@ import org.example.ebankbackend.domain.enums.Role;
 import org.example.ebankbackend.repository.ClientRepository;
 import org.example.ebankbackend.repository.UserRepository;
 import org.example.ebankbackend.service.ClientService;
+import org.example.ebankbackend.service.EmailService;
 import org.example.ebankbackend.util.PasswordGenerator;
 import org.example.ebankbackend.web.dto.request.CreateClientRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,15 +19,18 @@ public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     public ClientServiceImpl(
             ClientRepository clientRepository,
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            EmailService emailService
     ) {
         this.clientRepository = clientRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     @Override
@@ -81,10 +85,8 @@ public class ClientServiceImpl implements ClientService {
 
         userRepository.save(user);
 
-        // TEMP: simulate email sending (RG-7)
-        System.out.println("[RG-7 EMAIL] to=" + email
-                + " | login=" + login
-                + " | password=" + rawPassword);
+        // RG-7: send email with credentials
+        emailService.sendCredentials(email, login, rawPassword);
     }
 
     // ===== Helpers =====
