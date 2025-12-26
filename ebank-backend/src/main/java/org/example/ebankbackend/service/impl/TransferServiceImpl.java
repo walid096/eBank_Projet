@@ -37,7 +37,7 @@ public class TransferServiceImpl implements TransferService {
     @Transactional
     public void transfer(String login, TransferRequest request) {
 
-        // ===== basic checks =====
+
         if (isBlank(login)) {
             throw new IllegalArgumentException("Login manquant");
         }
@@ -79,7 +79,7 @@ public class TransferServiceImpl implements TransferService {
             );
         }
 
-        // ===== RG_11: account not blocked/closed =====
+        // ===== account not blocked/closed =====
         if (source.getStatus() == AccountStatus.BLOQUE || source.getStatus() == AccountStatus.CLOTURE) {
             throw new IllegalArgumentException("Compte source bloqué ou fermé");
         }
@@ -87,15 +87,15 @@ public class TransferServiceImpl implements TransferService {
             throw new IllegalArgumentException("Compte destination bloqué ou fermé");
         }
 
-        // ===== RG_12: balance > amount =====
+        // =====  balance > amount =====
         if (source.getBalance() == null || source.getBalance().compareTo(amount) < 0) {
             throw new IllegalArgumentException("Solde insuffisant");
         }
 
-        // ===== RG_13: debit source =====
+        // =====  debit source =====
         source.setBalance(source.getBalance().subtract(amount));
 
-        // ===== RG_14: credit destination =====
+        // =====   credit destination =====
         if (destination.getBalance() == null) {
             destination.setBalance(BigDecimal.ZERO);
         }
@@ -105,7 +105,7 @@ public class TransferServiceImpl implements TransferService {
         accountRepository.save(source);
         accountRepository.save(destination);
 
-        // ===== RG_15: trace both operations with exact same datetime =====
+        // =====   trace both operations with exact same datetime =====
         LocalDateTime now = LocalDateTime.now();
 
         // UC-4: Format operation labels according to requirement

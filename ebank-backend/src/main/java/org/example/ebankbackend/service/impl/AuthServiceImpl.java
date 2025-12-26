@@ -52,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
         // 1) who is connected? (set by JwtAuthFilter)
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || auth.getName() == null) {
-            // Normally your security entry point will handle unauthenticated
+
             throw new BadCredentialsException("Session invalide, veuillez s’authentifier");
         }
 

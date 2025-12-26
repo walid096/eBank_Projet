@@ -71,9 +71,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Allow React frontend origin (change this to your React app URL)
-        // For development: http://localhost:3000 (default React port)
-        // For production: replace with your actual frontend URL
+
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:5173"));
 
         // Allow common HTTP methods

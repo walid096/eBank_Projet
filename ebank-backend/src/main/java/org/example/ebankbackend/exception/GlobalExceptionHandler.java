@@ -20,7 +20,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleValidation(MethodArgumentNotValidException ex) {
-        // For RG-5 we keep it simple: any DTO validation error => mandatory fields missing
-        return MISSING_FIELDS_MESSAGE;
+         return MISSING_FIELDS_MESSAGE;
     }
 }

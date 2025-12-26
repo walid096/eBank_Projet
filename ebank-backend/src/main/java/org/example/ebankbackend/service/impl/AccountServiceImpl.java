@@ -42,9 +42,7 @@ public class AccountServiceImpl implements AccountService {
         this.operationRepository = operationRepository;
     }
 
-    // =========================
-    // UC-3 (AGENT_GUICHET)
-    // =========================
+
     @Override
     public void createAccount(CreateAccountRequest request) {
 
@@ -77,9 +75,7 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(account);
     }
 
-    // =========================
-    // UC-4 (CLIENT) - list accounts
-    // =========================
+
     @Override
     public List<AccountSummaryResponse> getMyAccounts(String login) {
         User user = getUserByLogin(login);
@@ -100,7 +96,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     // =========================
-    // UC-4 (CLIENT) - dashboard for one account (rib)
+    // dashboard for one account (rib)
     // =========================
     @Override
     public AccountDashboardResponse getMyDashboard(String login, String rib) {
@@ -113,7 +109,7 @@ public class AccountServiceImpl implements AccountService {
 
         Account account;
 
-        // ✅ If rib provided -> normal behavior
+        //  If rib provided -> normal behavior
         if (!isBlank(rib)) {
             account = accountRepository.findByRib(rib.trim())
                     .orElseThrow(() -> new IllegalArgumentException("Compte introuvable"));
@@ -121,7 +117,7 @@ public class AccountServiceImpl implements AccountService {
             assertAccountBelongsToUserClient(account, user);
 
         } else {
-            // ✅ rib missing -> choose default account = most recently moved
+            //  rib missing -> choose default account = most recently moved
             Long clientId = user.getClient().getId();
             List<Account> accounts = accountRepository.findByClientId(clientId);
 
@@ -172,9 +168,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
-    // =========================
-    // UC-4 (CLIENT) - pagination for other operations
-    // =========================
+
+    // (CLIENT) - pagination for other operations
+
     @Override
     public OperationPageResponse getMyOperations(String login, String rib, int page, int size) {
 
@@ -218,9 +214,7 @@ public class AccountServiceImpl implements AccountService {
         );
     }
 
-    // =========================
-    // Helpers
-    // =========================
+    //HELPERS :
     private User getUserByLogin(String login) {
         if (isBlank(login)) {
             throw new IllegalArgumentException("Login manquant");

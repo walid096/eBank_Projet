@@ -13,7 +13,7 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    // RG_3: 1 hour
+    //  epires in 1 hour
     private static final long EXPIRATION_MS = 60 * 60 * 1000;
 
     private final Key signingKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);

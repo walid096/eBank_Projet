@@ -25,7 +25,7 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(request));
     }
 
-    // ✅ EPIC 1: Change password (authenticated users only)
+    //  Change password (authenticated users only)
     @PutMapping("/change-password")
     public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         authService.changePassword(request);

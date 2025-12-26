@@ -37,7 +37,7 @@ public class ClientServiceImpl implements ClientService {
     @Transactional
     public void createClient(CreateClientRequest request) {
 
-        // RG-5
+
         requireClientFields(request);
 
         String identityNumber = request.getIdentityNumber().trim();
@@ -46,17 +46,17 @@ public class ClientServiceImpl implements ClientService {
         String lastName = request.getLastName().trim();
         String postalAddress = request.getPostalAddress().trim();
 
-        // RG-4
+
         if (clientRepository.existsByIdentityNumber(identityNumber)) {
             throw new IllegalArgumentException("Numéro d'identité déjà utilisé");
         }
 
-        // RG-6
+
         if (clientRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Email déjà utilisé");
         }
 
-        // UC-2: save client
+        //   save client
         Client client = new Client();
         client.setFirstName(firstName);
         client.setLastName(lastName);
@@ -67,7 +67,7 @@ public class ClientServiceImpl implements ClientService {
 
         client = clientRepository.save(client);
 
-        // RG-7: create user
+        // create user
         String login = identityNumber;
 
         if (userRepository.existsByLogin(login)) {
@@ -85,7 +85,7 @@ public class ClientServiceImpl implements ClientService {
 
         userRepository.save(user);
 
-        // RG-7: send email with credentials
+        //  send email with credentials
         emailService.sendCredentials(email, login, rawPassword);
     }
 
